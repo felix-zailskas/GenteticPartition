@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Population{
     int popSize;
-    Generation generation;
+    Chromosome chromosome;
 
 
     public Population(){
