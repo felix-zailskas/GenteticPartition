@@ -15,7 +15,7 @@ public class Generation{
         this.chromosomes = new Chromosome[popSize];
         this.blockHeights = blockHeights.clone();
         for (int i = 0; i < this.popSize; i++) {
-            chromosomes[i] = new Chromosome(chromLength);
+            chromosomes[i] = new Chromosome(chromLength, this.blockHeights);
         }
     }
 
@@ -38,7 +38,7 @@ public class Generation{
         Arrays.sort(this.chromosomes, new Comparator<Chromosome>() {
             @Override
             public int compare(Chromosome c1, Chromosome c2) {
-                return (c1.getFitness() > c2.getFitness() ? 1 : -1);
+                return (c1.getFitness() > c2.getFitness() ? -1 : 1);
             }
         });
     }

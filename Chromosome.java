@@ -8,7 +8,7 @@ public class Chromosome{
     private boolean genes[];
     private int blockHeights[];
     private int fitness;
-    private int mutationChance = 10;
+    private int mutationChance = 30;
 
     // create a chromosome with random genes
     public Chromosome(int chromSize, int blockHeights[]){
@@ -75,7 +75,7 @@ public class Chromosome{
         for (int i = 0; i < this.blockHeights.length; i++) {
             maxFit += this.blockHeights[i];
             // if genes[i] = true the block is on tower 1
-            if (this.genes[i]) {
+            if (this.genes[i]){
                 height1 += this.blockHeights[i];
             }
             // if genes[i] = false the block is on tower 2
