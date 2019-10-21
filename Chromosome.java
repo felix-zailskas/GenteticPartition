@@ -10,7 +10,8 @@ public class Chromosome{
     private int fitness;
     private int mutationChance = 30;
 
-    // create a chromosome with random genes
+    
+	// create a chromosome with random genes
     public Chromosome(int chromSize, int blockHeights[]){
         this.chromSize = chromSize;
         this.genes = new boolean[this.chromSize];
@@ -87,4 +88,33 @@ public class Chromosome{
         // the fitness is the maximum fitness minus the distance of tower 1 and tower 2
         return maxFit - distance;
     }
+    
+    public int[] getBlockHeights() {
+		return blockHeights;
+	}
+
+	public void setBlockHeights(int[] blockHeights) {
+		this.blockHeights = blockHeights;
+	}
+
+	public int getMutationChance() {
+		return mutationChance;
+	}
+
+	public void setMutationChance(int mutationChance) {
+		this.mutationChance = mutationChance;
+	}
+
+	public void setChromSize(int chromSize) {
+		this.chromSize = chromSize;
+	}
+
+	public void setGenes(boolean[] genes) {
+		this.genes = genes;
+	}
+
+	public void setFitness(int fitness) {
+		this.fitness = fitness;
+	}
+
 }
