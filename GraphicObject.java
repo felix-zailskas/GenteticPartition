@@ -1,7 +1,8 @@
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Random;
 
-public class GraphicObject {
+public abstract class GraphicObject {
 	protected int posX;
 	protected int posY;
 	protected Color color;
@@ -10,9 +11,12 @@ public class GraphicObject {
 	public GraphicObject() {
 		posX=0;
 		posY=0;
-		color= new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
+		//color= new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
 	}
 
+	
+	public abstract void render(Graphics g);
+	
 	public int getPosX() {
 		return posX;
 	}

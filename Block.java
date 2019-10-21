@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics;
 
 public class Block extends GraphicObject {
 	
@@ -17,6 +18,7 @@ public class Block extends GraphicObject {
 		
 	}
 
+	
 	public int getHeight() {
 		return height;
 	}
@@ -31,5 +33,13 @@ public class Block extends GraphicObject {
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+
+
+	@Override
+	public void render(Graphics g) {
+		g.setColor(this.color);
+		g.fillRect(this.posX, this.posY, this.width, this.height);
+		
 	}
 }

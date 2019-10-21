@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics;
 
 public class Hud extends GraphicObject{
 	
@@ -15,5 +16,10 @@ public class Hud extends GraphicObject{
 	}
 	public void setGeneration(int generation) {
 		this.generation = generation;
+	}
+	@Override
+	public void render(Graphics g) {
+		// TODO Auto-generated method stub
+		
 	}
 }
