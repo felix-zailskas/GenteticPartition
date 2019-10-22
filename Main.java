@@ -12,6 +12,7 @@ public class Main{
 	  window = new JFrameSimulation();
 	  window.requestFocus();
 	  window.setVisible(true);
+	  window.toFront();
 	  window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 }

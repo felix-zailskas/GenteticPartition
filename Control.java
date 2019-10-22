@@ -23,6 +23,7 @@ public class Control extends Canvas implements Runnable{
 	private int limit;
 	private int notChanged;
 	private int localBest;
+	private Hud hud;
 	private Generation bestGeneration;
 	private ArrayList<Block> blocks;
 	private Thread simulation;
@@ -46,13 +47,12 @@ public class Control extends Canvas implements Runnable{
 		this.notChanged = 0;
 		this.localBest = 0;
 		this.blocks = new ArrayList<Block>();
+		this.hud = new Hud();
 		//we set how many pixels will one block unit measure...
 		initializeBlocks();
-		this.pixelsPerBlockUnit = 800/this.totalHeight;
+		this.pixelsPerBlockUnit = (800/(this.totalHeight))*2;
 		initialGeneration();
 		initializeBlocksList();
-		
-		
 		setFocusable(true);
 	    requestFocus();
 		
@@ -131,17 +131,29 @@ public class Control extends Canvas implements Runnable{
 				this.bestFitness = localBest;
 				this.bestGeneration = this.generations.get(this.currentGeneration);
 				this.notChanged = 0;
-				
+				float bg = this.bestGeneration.getFittestChromosome().getFitness();
+				float mf = this.maxFitness;
+				hud.setAccuracy((float)(bg/mf)*100);
 			}else {
 				
 				this.notChanged+=1;
 				
 			}
+			//update generations...
 			this.generations.add(new Generation(this.popSize, this.generations.get(this.currentGeneration).crossOver(), this.blockHeights));
 			this.currentGeneration+=1;
+			this.hud.setGeneration(this.currentGeneration);
 			System.out.println("\n\nBest generation: ");
 			this.bestGeneration.printChromosomes();
 			System.out.println("MAX FITNESS FOR SIMULATION: "+ this.maxFitness+" Final generation: "+this.currentGeneration);
+		}else if(!hud.isFinalGeneration()) {
+			//calculate accuracy...
+			float bg = this.bestGeneration.getFittestChromosome().getFitness();
+			float mf = this.maxFitness;
+			hud.setAccuracy((float)(bg/mf)*100);
+			//mark the end end of simulation...
+			hud.setFinalGeneration(true);
+			
 		}
 		
 	}
@@ -155,9 +167,7 @@ public class Control extends Canvas implements Runnable{
 		Graphics g = bs.getDrawGraphics();
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-		g.setColor(Color.blue);
-		g.fillRect(100, 900, 200, 10);
-		
+		this.hud.render(g);
 		for(int i = 0;i<this.blocks.size();i++) {
 			this.blocks.get(i).render(g);;
 		}
@@ -167,7 +177,7 @@ public class Control extends Canvas implements Runnable{
 	}
 	@Override
 	public void run() {
-		//target of 80fps...
+		//target of 60fps...
 		double target = 60;
 		//equivalent to 1 second per tick...
 		double nsPerTick = 1000000000.0/target;
@@ -209,6 +219,13 @@ public class Control extends Canvas implements Runnable{
 	    		fps = 0;
 	    		tps = 0;
 	    	}
+	    	try {
+	    		//delay for animation to be visible...
+	    		Thread.sleep(700);
+	    	}catch(Exception e) {
+	    		e.printStackTrace();
+	    	}
+	    	
 	    }
 	    
 	    
@@ -224,9 +241,9 @@ public class Control extends Canvas implements Runnable{
 		Random r = new Random();
 		int currentY0 = 900;
 		int currentY1 = 900;
-		int widthBlocks = 100;
-		int initialX = 400;
-		int separationTowers = 100;
+		int widthBlocks = 200;
+		int initialX = 500;
+		int separationTowers = 350;
 		
 		for(int i = 0; i < c.getChromSize(); i++) {
 			

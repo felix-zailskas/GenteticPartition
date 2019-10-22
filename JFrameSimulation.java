@@ -18,6 +18,7 @@ public class JFrameSimulation extends JFrame{
 		control = new Control(popSize, numBlocks);
 		this.add(control);
 		
+		
 	}
 	
 	
