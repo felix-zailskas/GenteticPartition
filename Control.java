@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -16,13 +17,16 @@ public class Control extends Canvas implements Runnable{
 	private int totalHeight;
 	private int canvasHeight;
 	private int canvasWidth;
-	private int pixelsPerBlockUnit;
+	private float pixelsPerBlockUnit;
 	private int currentGeneration;
 	private int bestFitness;
 	private int maxFitness;
 	private int limit;
 	private int notChanged;
 	private int localBest;
+	private boolean perfectSolution;
+	private boolean ran;
+	private Chromosome startingChromosome;
 	private Hud hud;
 	private Generation bestGeneration;
 	private ArrayList<Block> blocks;
@@ -50,13 +54,24 @@ public class Control extends Canvas implements Runnable{
 		this.hud = new Hud();
 		//we set how many pixels will one block unit measure...
 		initializeBlocks();
-		this.pixelsPerBlockUnit = (800/(this.totalHeight))*2;
+		
+		
+		
+		this.pixelsPerBlockUnit = ((float)800/(this.totalHeight)*2);
+		this.perfectSolution = false;
+		this.startingChromosome = createStartingChromosome();
+		this.ran = false;
+		if(perfectSolution) {
+			
+			this.bestGeneration = createBestGeneration();
+		}
 		initialGeneration();
 		initializeBlocksList();
 		setFocusable(true);
 	    requestFocus();
 		
 	}
+	
 	 public void addNotify()
 	  /* Wait for the JPanel to be added to the
 	     JFrame/JApplet before starting. */
@@ -83,6 +98,45 @@ public class Control extends Canvas implements Runnable{
 			this.totalHeight += blockHeights[i];
 			this.maxFitness+=this.blockHeights[i];
 		}
+	}
+	private Generation createBestGeneration() {
+		Chromosome bestChromosomes[] = new Chromosome[this.popSize];
+		for (int i = 0; i < this.popSize; i++) {
+			bestChromosomes[i] = this.startingChromosome;
+		}
+		return new Generation(this.numBlocks, bestChromosomes, this.blockHeights);
+	}
+	private Chromosome createStartingChromosome() {
+		boolean genes[] = new boolean[this.numBlocks];
+		int left, right, numLeft, numRight;
+		left = right = numLeft = numRight = 0;
+		Arrays.sort(this.blockHeights);
+		
+		left+=this.blockHeights[this.numBlocks-1];
+		genes[this.numBlocks-1] = false;
+		numLeft++;
+		for (int i = 0; i <= this.numBlocks-2; i++) {
+			if(right <= left) {
+				right+=this.blockHeights[i];
+				genes[i] = true;
+				numRight++;
+			}
+			else {
+				left+=this.blockHeights[i];
+				genes[i] = false;
+				numLeft++;
+			}
+			
+		}
+		System.out.println("Right: "+right+" Left: "+left);
+		if (numLeft == 1 || right == left) {
+			//perfect solution
+			this.perfectSolution = true;
+			System.out.println("Perfect solution!");
+		}
+		//the first arg refers to the size of the chromosome...
+		return new Chromosome(this.numBlocks, genes, this.blockHeights);
+		
 	}
 	private void initialGeneration() {
 		generations.add(new Generation(this.popSize, this.numBlocks, this.blockHeights));
@@ -118,7 +172,15 @@ public class Control extends Canvas implements Runnable{
 
 	public void update() {
 		
-		if(!(notChanged == this.limit || this.bestFitness == this.maxFitness)) {
+		if(this.perfectSolution && !this.ran) {
+			this.ran = true;
+			updateBlockList(this.bestGeneration.getFittestChromosome());
+			hud.setAccuracy(100);
+			hud.setGeneration(1);
+			hud.setFinalGeneration(true);
+			
+		}
+		if(!(notChanged == this.limit || this.bestFitness == this.maxFitness||this.perfectSolution)) {
 			
 			localBest = generations.get(currentGeneration).getFittestChromosome().getFitness();
 			
@@ -165,6 +227,7 @@ public class Control extends Canvas implements Runnable{
 		}
 		
 		Graphics g = bs.getDrawGraphics();
+		
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.hud.render(g);
@@ -260,14 +323,14 @@ public class Control extends Canvas implements Runnable{
 				//means it is tower A (different coordinates than B in x...)
 				case 0:
 					System.out.println("entered 0");
-					this.blocks.add(new Block(initialX, currentY0 - (c.getBlockHeights()[i]*this.pixelsPerBlockUnit),c.getBlockHeights()[i]*this.pixelsPerBlockUnit , widthBlocks));
+					this.blocks.add(new Block(initialX, currentY0 - (int)(c.getBlockHeights()[i]*this.pixelsPerBlockUnit),(int)(c.getBlockHeights()[i]*this.pixelsPerBlockUnit) , widthBlocks));
 					currentY0 -= (c.getBlockHeights()[i]*this.pixelsPerBlockUnit);
 				break;
 				//means it is tower B (different coordinates than A in x...)
 				case 1:
 					System.out.println("entered 1");
-					this.blocks.add(new Block(initialX + widthBlocks +separationTowers, currentY1 - c.getBlockHeights()[i]*this.pixelsPerBlockUnit, c.getBlockHeights()[i]*this.pixelsPerBlockUnit, widthBlocks));
-					currentY1 -= (c.getBlockHeights()[i]*this.pixelsPerBlockUnit);
+					this.blocks.add(new Block(initialX + widthBlocks +separationTowers, currentY1 - (int)(c.getBlockHeights()[i]*this.pixelsPerBlockUnit), (int)(c.getBlockHeights()[i]*this.pixelsPerBlockUnit), widthBlocks));
+					currentY1 -= (int)(c.getBlockHeights()[i]*this.pixelsPerBlockUnit);
 				break;
 			}
 			blocks.get(i).setColor(new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255)));
@@ -275,6 +338,10 @@ public class Control extends Canvas implements Runnable{
 		
 	}
 	
+	private void scaleTotalHeight() {
+		float scale = (float)this.totalHeight/800;
+		this.totalHeight = (int)(this.totalHeight/scale);
+	}
 	private void initializeBlocksList() {
 		//blocks.add(new Block(10,10,10,10));
 	}

@@ -40,6 +40,5 @@ public class Block extends GraphicObject {
 	public void render(Graphics g) {
 		g.setColor(this.color);
 		g.fillRect(this.posX, this.posY, this.width, this.height);
-		
 	}
 }
